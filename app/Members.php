@@ -20,6 +20,11 @@ class Members extends Model
        $this->hasMany('App\MemberLog');
     }
 
+    public function photos()
+    {
+        return $this->hasMany('App\MemberPhotos','member_id');
+    }
+
     public function notificationLogs()
     {
        $this->hasMany('App\OrganizationNotificationLogs');

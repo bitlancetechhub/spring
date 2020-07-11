@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use Session;
 use App\User;
+use App\Location;
 class UserController extends Controller
 {
 
@@ -41,7 +42,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect('user/change-password')->withErrors($validator)->withInput(); 
+            return redirect('user/change-password')->withErrors($validator)->withInput();
         }
 
         $currpwd = $request->get('current_password');
@@ -49,20 +50,20 @@ class UserController extends Controller
         $hashedPassword = Auth::user()->password;
 
         if (\Hash::check($currpwd , $hashedPassword )) {
- 
+
             if (!\Hash::check($pwd , $hashedPassword)) {
- 
+
               $users =User::find(Auth::user()->id);
               $users->password = bcrypt($pwd);
               User::where( 'id' , Auth::user()->id)->update( array( 'password' =>  $users->password));
- 
+
               Session::flash('alert-success','Password updated successfully');
               return redirect('user/change-password');
             }
             else{
                 Session::flash('alert-warning','New password can not be the old password!');
                 return redirect('user/change-password');
-            } 
+            }
         }else{
             Session::flash('alert-danger','Old password does not matched ');
             return redirect('user/change-password');
@@ -74,7 +75,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     
+
     public function show($id)
     {
         $user = $this->user->find($id);
@@ -91,5 +92,17 @@ class UserController extends Controller
     {
         $this->user->delete($id);
         return redirect()->route('user');
+    }
+
+    public function getStatesByCountry(Request $request){
+        $country=$request->country;
+        $states=Location::where(['country' => $country,'deleted_at' => null])->get(['state']);
+        return response()->json(array('states' => $states));
+    }
+
+    public function getCitiesByState(Request $request){
+        $state=$request->state;
+        $cities=Location::where(['state' => $state,'deleted_at' => null])->get(['id','city']);
+        return response()->json(array('cities'=>$cities));
     }
 }

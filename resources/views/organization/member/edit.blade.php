@@ -16,6 +16,9 @@
                          <li class="breadcrumb-item">
                             <a href="{{ route('organizations') }}" class="link">Organizations</a>
                         </li>
+                        <li class="breadcrumb-item">
+                            <a class="link">Member Edit</a>
+                        </li>
                     </ol>
                 </nav>
             </div>
@@ -65,40 +68,42 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label for="identity_no" class="control-label">Identity No.:</label>
-                            <input type="text" required class="form-control @error('identity_no') is-invalid @enderror" name="identity_no" id="identity_no" value="{{ $data->identity_no }}">
-                            @error('identity_no')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                       <div class="form-group">
-                            <label for="class" class="control-label">Designation/Class:</label>
-                            <input type="text" required class="form-control @error('designation_class') is-invalid @enderror" name="designation_class" id="class" value="{{ $data->designation_class }}">
-                            @error('designation_class')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <label for="division" class="control-label">Department/Division:</label>
-                            <input type="text" required class="form-control @error('department_division') is-invalid @enderror" name="department_division" id="division" value="{{ $data->department_division }}">
-                            @error('department_division')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <label for="mobno" class="control-label">Mobile number:</label>
-                            <input type="text" class="form-control @error('mobile_no') is-invalid @enderror" id="mobno" name="mobile_no" value="{{ $data->mobile_no }}">
-                            @error('mobile_no')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                            <div class="row">
+                                <div class="col-md-6">
+                                        <label for="identity_no" class="control-label">Identity No.:</label>
+                                        <input type="text" required class="form-control @error('identity_no') is-invalid @enderror" name="identity_no" id="identity_no" value="{{ $data->identity_no }}">
+                                        @error('identity_no')
+                                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong></span>
+                                        @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="mobno" class="control-label">Mobile number:</label>
+                                    <input type="text" class="form-control @error('mobile_no') is-invalid @enderror" id="mobno" name="mobile_no" value="{{ $data->mobile_no }}">
+                                    @error('mobile_no')
+                                    <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6"><br>
+                                    <label for="class" class="control-label">Designation/Class:</label>
+                                    <input type="text" required class="form-control @error('designation_class') is-invalid @enderror" name="designation_class" id="class" value="{{ $data->designation_class }}">
+                                    @error('designation_class')
+                                    <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6"><br>
+                                    <label for="division" class="control-label">Department/Division:</label>
+                                    <input type="text" required class="form-control @error('department_division') is-invalid @enderror" name="department_division" id="division" value="{{ $data->department_division }}">
+                                    @error('department_division')
+                                    <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+                            </div>
+
                         </div>
                         <br>
                          <button type="submit" class="btn btn-primary">Update</button>
@@ -116,7 +121,7 @@
                             <label for="video" class="control-label">Upload Video:</label>
                             <div class="col-md-12 m-b-20 text-center">
                                 @if(!empty($data->video_url))
-                                    <video width="100%" controls>
+                                    <video width="100%" height="150px" controls>
                                         <source src="{{ env('APP_URL') }}/{{ $data->video_url }}" type="video/{{ pathinfo($data->video_url, PATHINFO_EXTENSION) }}">
                                         Your browser does not support the video tag.
                                     </video>
@@ -133,6 +138,42 @@
                         </div>
                         <br>
                          <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action="" enctype="multipart/form-data" method="POST">
+                        @csrf
+                        <div class="form-group">
+                            <div class="row">
+                                    @if(!empty($data->photos))
+                                        @foreach($data->photos as $p)
+                                            <div class="col-md-3">
+                                                <form method="post" action="{{ route('delete-memimg') }}" onsubmit="confirm('Are you sure?');">
+                                                    @csrf
+                                                    <input type="hidden" name="imgid" value="{{ $p->id }}">
+                                                    <button data-toggle="tooltip" data-placement="top" title="Remove Image" class="btn btn-primary btn-circle-sm pull-right" > <i class="fa fa-minus"></i> </button>
+                                                    <img src="{{ env('APP_URL') }}/{{ $p->image_url }}" width="100%">
+                                                </form>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <i class="fas fa-hospital-alt fa-4x"></i>
+                                    @endif
+                            </div>
+                            <label for="image" class="control-label">Upload Image:</label>
+                            <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" id="image" required="true">
+                            @error('image')
+                                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Upload</button>
                     </form>
                 </div>
             </div>

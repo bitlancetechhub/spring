@@ -76,7 +76,7 @@
                                             @endif
                                         </td>
                                         <td>{{ $p->name }}<br>
-                                        <small>Created at {{ Helper::converToTz($p->created_at) }}</small>    
+                                        <small>Created at {{ Helper::converToTz($p->created_at) }}</small>
                                         </td>
                                         <td>{{ $p->email }}</td>
                                         <td>{{ $p->mobile_no }}</td>
@@ -88,7 +88,7 @@
                                                 <button type="submit" class="btn btn-link text-inverse" title="Delete" data-toggle="tooltip"><i class="ti-trash"></i></button>
                                             </form>
                                         </td>
-                                    </tr>    
+                                    </tr>
                                     @endforeach
                                 @endif
                             </tbody>
@@ -107,7 +107,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
-            <form action="{{ route('new-organization') }}" method="POST"> 
+            <form action="{{ route('new-organization') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
@@ -159,7 +159,7 @@
                         <div class="row">
                             <div class="col-6">
                                 <label for="country" class="control-label">Country:</label>
-                                <select class="form-control @error('country') is-invalid @enderror" id="country" name="country">
+                                <select class="form-control @error('country') is-invalid @enderror" id="country" >
                                     @if(!empty($country))
                                         @foreach($country as $p)
                                             <option value="{{ $p->country }}">{{ $p->country }}</option>
@@ -174,7 +174,12 @@
                             </div>
                             <div class="col-6">
                                 <label for="state" class="control-label">State:</label>
-                                <select class="form-control @error('state') is-invalid @enderror" id="state" name="state">
+                                <select class="form-control @error('state') is-invalid @enderror" id="state">
+                                    @if(!empty($states))
+                                        @foreach($states as $p)
+                                            <option value="{{ $p->state }}">{{ $p->state }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @error('state')
                                     <span class="invalid-feedback" role="alert">
@@ -226,5 +231,25 @@
     });
     </script>
 @endif
+
+    <script>
+        $("#state").change(function () {
+            var state=this.value;
+            $.ajax({
+                url:"{{ route('getCityByState') }}",
+                method:"POST",
+                data:{'state' : state, '_token' : $('meta[name="csrf-token"]').attr('content')},
+                success:function (res) {
+                    var no=res.cities.length;
+                    // console.log(res.cities);
+                    var data="";
+                    for(var i=0;i<no;i++){
+                        data+="<option value="+res.cities[i].id+">"+res.cities[i].city+"</option>";
+                    }
+                    $("#location_id").html(data);
+                }
+            });
+        });
+    </script>
 
 @endsection

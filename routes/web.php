@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/organization/member/{memid}/edit', 'MemberController@edit')->name('edit-member');
 	Route::post('/organization/member/{memid}/edit', 'MemberController@update')->name('edit-member');
 	Route::post('/organization/member/delete', 'MemberController@delete')->name('delete-member');
+    Route::post('/member-img/delete', 'MemberController@deleteImg')->name('delete-memimg');
 
 	Route::get('/subscriptions', 'SubscriptionController@index')->name('subscriptions');
 	Route::get('/subscription/{subid}/edit', 'SubscriptionController@edit')->name('edit-subscription');
@@ -56,4 +57,5 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/organization/device/{devid}/details', 'DeviceController@details')->name('organization-device-details');
 	Route::post('/device/plan/add', 'DeviceController@purchasePlan')->name('new-device-plan');
 
+	Route::post('getCityByState','UserController@getCityByState')->name('getCityByState');
 });

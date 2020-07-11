@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\MemberPhotos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Validator;
@@ -28,7 +29,7 @@ class MemberController extends Controller
         $orgid=$request->organization_id;
 
         if ($validator->fails()) {
-            return redirect('organization/'.$orgid.'/details')->withErrors($validator)->withInput(); 
+            return redirect('organization/'.$orgid.'/details')->withErrors($validator)->withInput();
         }
 
     	$data=$request->except('_token');
@@ -55,7 +56,7 @@ class MemberController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect('organization/member/'.$memid.'/edit')->withErrors($validator)->withInput(); 
+                return redirect('organization/member/'.$memid.'/edit')->withErrors($validator)->withInput();
             }
 
     		$image_url="";
@@ -67,13 +68,35 @@ class MemberController extends Controller
 
 	      	$userscount = Members::where('id',$memid)->update(["video_url"=>$image_url]);
 			if($userscount){
-				Session::flash('alert-success', 'Member image updated successfully!');
+				Session::flash('alert-success', 'Member video updated successfully!');
 				return redirect('organization/member/'.$memid.'/edit');
 			}else{
-				Session::flash('alert-danger', 'Member image not updated.');
+				Session::flash('alert-danger', 'Member video not updated.');
 				return redirect('organization/member/'.$memid.'/edit');
 			}
-    	}else{
+    	}else if($request->file('image')){
+            $validator = Validator::make($request->all(), [
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            ]);
+
+            if ($validator->fails()) {
+                return redirect('organization/member/'.$memid.'/edit')->withErrors($validator)->withInput();
+            }
+
+            $image_url="";
+            $files = $request->file('image');
+            $destinationPath = 'uploads/organizations/members/';
+            $filename = time().'.'.$files->getClientOriginalExtension();
+            $files->move($destinationPath, $filename);
+            $userscount=MemberPhotos::insert(['member_id' => $memid,'image_url' => 'uploads/organizations/members/'.$filename]);
+            if($userscount){
+                Session::flash('alert-success', 'Member image updated successfully!');
+                return redirect('organization/member/'.$memid.'/edit');
+            }else{
+                Session::flash('alert-danger', 'Member image not updated.');
+                return redirect('organization/member/'.$memid.'/edit');
+            }
+        }else{
 	    	$name=$request->name;
 	    	$identity_no=$request->identity_no;
 	    	$class=$request->designation_class;
@@ -89,7 +112,7 @@ class MemberController extends Controller
 	        ]);
 
 	        if ($validator->fails()) {
-	            return redirect('organization/member/'.$memid.'/edit')->withErrors($validator)->withInput(); 
+	            return redirect('organization/member/'.$memid.'/edit')->withErrors($validator)->withInput();
 	        }
 
 	        $userd = Members::where('id',$memid)->update(['name' => $name,'identity_no' => $identity_no,'designation_class' => $class,'department_division' => $division,'mobile_no' => $mobile_no]);
@@ -108,11 +131,23 @@ class MemberController extends Controller
     	$orgid=$request->orgid;
     	$res=Members::find($id)->delete();
     	if($res){
-    		Session::flash('alert-success', 'Organization delete successfully!');
+    		Session::flash('alert-success', 'Member delete successfully!');
         	return redirect('organization/'.$orgid.'/details');
     	}else{
-    		Session::flash('alert-danger', 'Organization not deleted!');
+    		Session::flash('alert-danger', 'Member not deleted!');
         	return redirect('organization/'.$orgid.'/details');
     	}
+    }
+
+    public function deleteImg(Request $request){
+        $imgid=$request->imgid;
+        $res=MemberPhotos::find($imgid)->delete();
+        if($res){
+            Session::flash('alert-success', 'Member image delete successfully!');
+            return back()->withInput();
+        }else{
+            Session::flash('alert-danger', 'Member Image not deleted!');
+            return back()->withInput();
+        }
     }
 }

@@ -21,7 +21,12 @@ class OrganizationController extends Controller
     public function index(){
     	$org =Organization::where('deleted_at',null)->get();
         $country=Location::where('deleted_at',null)->distinct()->get('country');
-        return view('organization.index',['data' => $org,'country' => $country]);
+        $states=null;
+        if(count($country)==1){
+            $countryid=$country[0]->country;
+            $states=Location::where(['deleted_at' => null,'country' => $countryid])->distinct()->get('state');
+        }
+        return view('organization.index',['data' => $org,'country' => $country,'states' => $states]);
     }
 
     public function add(Request $request){
@@ -33,11 +38,11 @@ class OrganizationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect('organizations')->withErrors($validator)->withInput(); 
+            return redirect('organizations')->withErrors($validator)->withInput();
         }
 
     	$data=$request->except('_token');
-    	$userd = Organization::updateOrCreate($data);
+    	$userd = Organization::insert($data);
     	if($userd){
     		Session::flash('alert-success', 'Organization added successfully!');
         	return redirect('organizations');
@@ -49,8 +54,16 @@ class OrganizationController extends Controller
 
     public function edit($orgid){
     	$data=Organization::find($orgid);
-    	return view('organization.edit',['data' => $data]);
-    } 
+        $country=Location::where('deleted_at',null)->distinct()->get('country');
+        $states=null;
+        $locid=$data->location_id;
+        if(count($country)==1){
+            $countryid=$country[0]->country;
+            $states=Location::where(['deleted_at' => null,'country' => $countryid])->distinct()->get('state');
+        }
+        $location=Location::where(['deleted_at' => null,'id' => $locid])->first();
+    	return view('organization.edit',['data' => $data,'country' => $country,'states' => $states,'location' => $location,'cities' => $location]);
+    }
 
     public function update(Request $request,$orgid){
 
@@ -88,7 +101,7 @@ class OrganizationController extends Controller
 	        ]);
 
 	        if ($validator->fails()) {
-	            return redirect('organization/'.$orgid.'/edit')->withErrors($validator)->withInput(); 
+	            return redirect('organization/'.$orgid.'/edit')->withErrors($validator)->withInput();
 	        }
 
 	        $userd = Organization::where('id',$orgid)->update(['name' => $name,'email' => $email,'mobile_no' => $mobile_no,'address_line1' => $address_line1,'address_line2' => $address_line2,'pincode' => $pincode,'location_id' => $location_id,'alt_mobile_no' => $alt_mobile_no]);

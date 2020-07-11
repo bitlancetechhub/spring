@@ -50,7 +50,7 @@
                     <h6 class="card-subtitle">{{ $data->email }}</h6>
                     <div class="row">
                         <div class="col-lg-3 col-md-3 col-sm-6">
-                            <div class="white-box text-center"> 
+                            <div class="white-box text-center">
                                 @if(!empty($data->logo_url))
                                     <img src="{{ env('APP_URL') }}/{{ $data->logo_url }}" class="img-fluid">
                                 @else
@@ -69,7 +69,7 @@
                                         </tr>
                                         <tr>
                                             <td width="390">Location</td>
-                                            <td> {{ $data->address_line1 }}, {{ $data->address_line2 }}, {{ $data->location_id }}, {{ $data->pincode }} </td>
+                                            <td> {{ $data->address_line1 }}, {{ $data->address_line2 }}, {{ !empty($data->location->country)?$data->location->country:'' }}, {{ !empty($data->location->state)?$data->location->state:'' }},{{ !empty($data->location->city)?$data->location->city:'' }}, {{ $data->pincode }} </td>
                                         </tr>
                                         <tr>
                                             <td width="390">Total Members</td>
@@ -79,7 +79,7 @@
                                             <td>Total Devices</td>
                                             <td> {{ count($hdevices) }} </td>
                                         </tr>
-                                       
+
                                     </tbody>
                                 </table>
                             </div>
@@ -118,7 +118,7 @@
                                     <tr class="tab-body-tr">
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $p->name }}<br>
-                                        <small>Created at {{ Helper::converToTz($p->created_at) }}</small>    
+                                        <small>Created at {{ Helper::converToTz($p->created_at) }}</small>
                                         </td>
                                         <td>{{ $p->identity_no }} / {{ $p->designation_class }} / {{ $p->department_division }}</td>
                                         <td>
@@ -130,7 +130,7 @@
                                                 <button type="submit" class="btn btn-link text-inverse" title="Delete" data-toggle="tooltip"><i class="ti-trash"></i></button>
                                             </form>
                                         </td>
-                                    </tr>    
+                                    </tr>
                                     @endforeach
                                 @endif
                             </tbody>
@@ -170,7 +170,7 @@
                                                 <button type="submit" class="btn btn-link text-inverse" title="Delete" data-toggle="tooltip"><i class="ti-trash"></i></button>
                                             </form>
                                         </td>
-                                    </tr>    
+                                    </tr>
                                     @endforeach
                                 @endif
                             </tbody>
@@ -189,7 +189,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
-            <form action="{{ route('new-member') }}" method="POST"> 
+            <form action="{{ route('new-member') }}" method="POST">
                 @csrf
                 <input type="hidden" value="{{ $data->id }}" name="organization_id">
                 <div class="modal-body">
@@ -257,7 +257,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
-            <form action="{{ route('new-device') }}" method="POST"> 
+            <form action="{{ route('new-device') }}" method="POST">
                 @csrf
                 <input type="hidden" value="{{ $data->id }}" name="orgid">
                 <div class="modal-body">

@@ -44,4 +44,9 @@ class Organization extends Model
     {
        return $this->hasMany('App\OrganizationNotificationLogs');
     }
+
+    public function location()
+    {
+        return $this->hasOne('App\Location','id');
+    }
 }

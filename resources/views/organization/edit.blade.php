@@ -53,7 +53,7 @@
                     @endforeach
                 </div>
                 <div class="card-body">
-                    <form action="" method="POST"> 
+                    <form action="" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="oname" class="control-label">Name:</label>
@@ -113,10 +113,10 @@
                             <div class="row">
                                 <div class="col-6">
                                     <label for="country" class="control-label">Country:</label>
-                                    <select class="form-control @error('country') is-invalid @enderror" id="country" name="country">
+                                    <select class="form-control @error('country') is-invalid @enderror" id="country">
                                         @if(!empty($country))
                                             @foreach($country as $p)
-                                                <option value="{{ $p->country }}">{{ $p->country }}</option>
+                                                <option value="{{ $p->country }}" {{ !empty($location) && $location->country == $p->country?'selected':'' }} >{{ $p->country }}</option>
                                             @endforeach
                                         @endif
                                     </select>
@@ -128,7 +128,12 @@
                                 </div>
                                 <div class="col-6">
                                     <label for="state" class="control-label">State:</label>
-                                    <select class="form-control @error('state') is-invalid @enderror" id="state" name="state">
+                                    <select class="form-control @error('state') is-invalid @enderror" id="state">
+                                        @if(!empty($states))
+                                            @foreach($states as $p)
+                                                <option value="{{ $p->state }}" {{ !empty($location) && $location->state == $p->state?'selected':'' }}>{{ $p->state }}</option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                     @error('state')
                                         <span class="invalid-feedback" role="alert">
@@ -139,6 +144,9 @@
                                 <div class="col-md-6">
                                     <label for="location_id" class="control-label">City:</label>
                                     <select class="form-control @error('location_id') is-invalid @enderror" id="location_id" name="location_id">
+                                        @if(!empty($cities))
+                                                <option value="{{ $cities->city }}" {{ !empty($location) && $location->city == $cities->city?'selected':'' }}>{{ $cities->city }}</option>
+                                        @endif
                                     </select>
                                     @error('location_id')
                                         <span class="invalid-feedback" role="alert">
@@ -167,7 +175,7 @@
           <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <form action="" enctype="multipart/form-data" method="POST"> 
+                    <form action="" enctype="multipart/form-data" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="logo" class="control-label">Logo:</label>
@@ -193,5 +201,32 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('scripts')
+    @parent
+
+    <script>
+        $("#state").change(function () {
+            var state=this.value;
+            $.ajax({
+                url:"{{ route('getCityByState') }}",
+                method:"POST",
+                data:{'state' : state, '_token' : $('meta[name="csrf-token"]').attr('content')},
+                success:function (res) {
+                    var no=res.cities.length;
+                    // alert(no);
+                    // console.log(res.cities);
+                    var data="";
+                    for(var i=0;i<no;i++){
+                        data+="<option value="+res.cities[i].id+">"+res.cities[i].city+"</option>";
+                    }
+                    $("#location_id").html(data);
+
+                }
+            });
+        });
+    </script>
 
 @endsection
