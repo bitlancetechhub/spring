@@ -53,7 +53,7 @@
                     @endforeach
                 </div>
                 <div class="card-body">
-                    <form action="" method="POST"> 
+                    <form action="" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="oname" class="control-label">Name:</label>
@@ -110,7 +110,7 @@
           <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <form action="" enctype="multipart/form-data" method="POST"> 
+                    <form action="" enctype="multipart/form-data" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="video" class="control-label">Upload Video:</label>
@@ -132,7 +132,7 @@
                             @enderror
                         </div>
                         <br>
-                         <button type="submit" class="btn btn-primary">Update Logo</button>
+                         <button type="submit" class="btn btn-primary">Update</button>
                     </form>
                 </div>
             </div>
