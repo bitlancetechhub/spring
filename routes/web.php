@@ -57,5 +57,5 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/organization/device/{devid}/details', 'DeviceController@details')->name('organization-device-details');
 	Route::post('/device/plan/add', 'DeviceController@purchasePlan')->name('new-device-plan');
 
-	Route::post('getCityByState','UserController@getCityByState')->name('getCityByState');
+	Route::post('getCityByState','UserController@getCitiesByState')->name('getCityByState');
 });
