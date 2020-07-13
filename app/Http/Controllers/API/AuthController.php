@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\DeviceLogs;
+use App\MemberLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
@@ -50,7 +52,7 @@ class AuthController extends Controller
           // Update Token
           $postArray = ['api_token' => $this->apiToken];
           $login = OrganizationUsers::where(['deviceid' => $request->deviceid,'organizationid' => $request->organizationid])->update($postArray);
-          
+
           if($login) {
           	$currentDate = date('Y-m-d');
           	$devst=Hdevice::where(['id' => $user->hdevice_id,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null)->count();
@@ -116,7 +118,7 @@ class AuthController extends Controller
 	    $rules = [
 	      'member_id' => 'required'
 	    ];
-	    
+
 	    $validator = Validator::make($request->all(), $rules);
 	    if ($validator->fails()) {
 	      // Validation failed
@@ -137,7 +139,7 @@ class AuthController extends Controller
 	            	'status' => 1,
 	            	'data' => $users
 	            ]);
-	         
+
 	        } else {
 	          return response()->json([
 	          	'status' => 0,
@@ -158,14 +160,14 @@ class AuthController extends Controller
 	$token = $request->header('Authorization');
     $user = OrganizationUsers::where('api_token',$token)->first();
   	if($user){
-  		
+
   		$rules = [
 	      'organizationid'=>'required',
 	      'deviceid' => 'required',
 	      'new_pin'=>'required|min:8',
 	      'current_pin'=>'required|min:8'
 	    ];
-	    
+
 	    $validator = Validator::make($request->all(), $rules);
 	    if ($validator->fails()) {
 	      // Validation failed
@@ -189,7 +191,7 @@ class AuthController extends Controller
 	          // Update Token
 	          $postArray = ['password' => bcrypt($new_pin)];
 	          $login = $user->update($postArray);
-	          
+
 	          if($login) {
 
 	            return response()->json([
@@ -234,7 +236,7 @@ class AuthController extends Controller
 	        'video' => 'mimes:mpeg,ogg,mp4,webm,3gp,mov,flv,avi,wmv,ts|max:100040',
 	        'photos' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
 	    ];
-	    
+
 	    $validator = Validator::make($request->all(), $rules);
 	    if ($validator->fails()) {
 	      // Validation failed
@@ -249,7 +251,7 @@ class AuthController extends Controller
 	    	$class=$request->designation_class;
 	    	$division=$request->department_division;
 	    	$mobile_no=$request->mobile_no;
-	    	
+
 	    	$video_url=null;
 
 	    	if($request->file('video')){
@@ -293,7 +295,7 @@ class AuthController extends Controller
     $user = OrganizationUsers::where(['api_token' => $token,'status' => 1])->first();
 
     if(!empty($user)) {
-	   
+
 	   $status="";
 	   $expiry_date=null;
 
@@ -320,11 +322,11 @@ class AuthController extends Controller
   }
 
   public function deviceWarning(Request $request){
-	   
+
 	   $rules = [
 		    'device_number' => 'required',
 	    ];
-	    
+
 	    $validator = Validator::make($request->all(), $rules);
 	    if ($validator->fails()) {
 	      // Validation failed
@@ -351,5 +353,47 @@ class AuthController extends Controller
 		  ]);
 		}
   }
+
+    public function uploadReport(Request $request){
+        $temp=0;
+        $front_camera_status=0;
+        $thermal_camera_status=0;
+        $sanitization_status=0;
+        $sanitization_check_in=0;
+        $student_check_in=0;
+        if(empty($request->device_number) && empty($request->member_id)){
+            return response()->json([
+                'errors' =>  (['device_number' => ['The device number field is required.'], 'member_id' => ['The member id field is required.']]),
+                'status' => 0,
+            ]);
+        }
+
+        if(!empty($request->device_number)){
+            $devno=$request->device_number;
+            $devst=Hdevice::where(['device_number' => $devno,'status' => 1, 'deleted_at' => null])->first();
+            if(!empty($devst)){
+                $front_camera_status=$request->front_camera_status;
+                $thermal_camera_status=$request->thermal_camera_status;
+                $sanitization_status=$request->sanitization_status;
+                $sanitization_check_in=$request->sanitization_check_in;
+                $student_check_in=$request->student_check_in;
+                DeviceLogs::insert(['hdevice_id' => $devst->id,'front_camera_status' => $front_camera_status,'thermal_camera_status' => $thermal_camera_status,'sanitization_status' => $sanitization_status,'sanitization_check_in' => $sanitization_check_in,'student_check_in' => $student_check_in]);
+            }
+        }
+        if(!empty($request->member_id)){
+            $memid=$request->member_id;
+            $memst=Members::where(['id' => $memid,'status' => 1, 'deleted_at' => null])->count();
+            if($memst>0) {
+                $student_check_in = $request->student_check_in;
+                $temp = $request->temp;
+                MemberLog::insert(['member_id' => $memid,'temp' => $temp]);
+            }
+        }
+        return response()->json([
+            'message' => "Report submitted",
+            'status' => 1,
+        ]);
+
+    }
 
 }

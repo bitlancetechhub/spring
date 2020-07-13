@@ -33,6 +33,7 @@ Route::prefix('v1')->namespace('API')->group(function () {
     Route::post('/member-details','AuthController@memberDetails');
     Route::post('/new-member','AuthController@newMember');
     Route::post('/subscription-status','AuthController@currentSubscriptionStatus');
+    Route::post('/upload-report','AuthController@uploadReport');
 
   });
 });

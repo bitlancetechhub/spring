@@ -145,7 +145,7 @@
                                     <label for="location_id" class="control-label">City:</label>
                                     <select class="form-control @error('location_id') is-invalid @enderror" id="location_id" name="location_id">
                                         @if(!empty($cities))
-                                                <option value="{{ $cities->city }}" {{ !empty($location) && $location->city == $cities->city?'selected':'' }}>{{ $cities->city }}</option>
+                                                <option value="{{ $cities->id }}" {{ !empty($location) && $location->city == $cities->city?'selected':'' }}>{{ $cities->city }}</option>
                                         @endif
                                     </select>
                                     @error('location_id')
@@ -156,7 +156,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="pincode" class="control-label">Pincode:</label>
-                                    <input type="text" class="form-control @error('pincode') is-invalid @enderror" id="pincode" name="pincode" value="{{ $data->pincode }}">
+                                    <input ty2pe="text" class="form-control @error('pincode') is-invalid @enderror" id="pincode" name="pincode" value="{{ $data->pincode }}">
                                     @error('pincode')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
