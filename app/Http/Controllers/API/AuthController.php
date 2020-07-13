@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\DeviceLogs;
 use App\MemberLog;
+use App\ota;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
@@ -393,7 +394,48 @@ class AuthController extends Controller
             'message' => "Report submitted",
             'status' => 1,
         ]);
+    }
 
+    public function addOta(Request $request){
+
+        $rules = [
+            'device_number' => 'required',
+            'type' => 'required',
+            'version' => 'required',
+            'host' => 'required',
+            'port' => 'required',
+            'bin' => 'required'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            // Validation failed
+            return response()->json([
+                'errors' => $validator->messages(),
+                'status' => 0,
+            ]);
+        } else{
+            $devst=Hdevice::where(['device_number' => $request->device_number,'status' => 1,'deleted_At' => null])->first();
+            if(!empty($devst)) {
+                $otast = ota::insert($request->all());
+                if ($otast > 0) {
+                    return response()->json([
+                        'message' => "OTA Added",
+                        'status' => 1,
+                    ]);
+                } else {
+                    return response()->json([
+                        'errors' => "Invalid request",
+                        'status' => 0,
+                    ]);
+                }
+            }else{
+                return response()->json([
+                    'errors' => "Device not found",
+                    'status' => 0,
+                ]);
+            }
+        }
     }
 
 }

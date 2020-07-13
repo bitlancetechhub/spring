@@ -34,6 +34,7 @@ Route::prefix('v1')->namespace('API')->group(function () {
     Route::post('/new-member','AuthController@newMember');
     Route::post('/subscription-status','AuthController@currentSubscriptionStatus');
     Route::post('/upload-report','AuthController@uploadReport');
+    Route::post('/add-ota','AuthController@addOta');
 
   });
 });
