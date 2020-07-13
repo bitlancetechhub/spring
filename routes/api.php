@@ -22,6 +22,7 @@ Route::prefix('v1')->namespace('API')->group(function () {
   // Login
   Route::post('/login','AuthController@postLogin');
   Route::post('/device-warning','AuthController@deviceWarning');
+  Route::post('/add-ota','AuthController@addOta');
   // Register
   // Route::post('/register','AuthController@postRegister');
   // Protected with APIToken Middleware
@@ -34,7 +35,6 @@ Route::prefix('v1')->namespace('API')->group(function () {
     Route::post('/new-member','AuthController@newMember');
     Route::post('/subscription-status','AuthController@currentSubscriptionStatus');
     Route::post('/upload-report','AuthController@uploadReport');
-    Route::post('/add-ota','AuthController@addOta');
 
   });
 });
