@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
+use Helper;
 use App\DeviceLogs;
 use App\MemberLog;
 use App\ota;
@@ -12,6 +12,7 @@ use App\OrganizationUsers;
 use App\Hdevice;
 use App\Members;
 use App\MemberPhotos;
+use App\OrganizationNotificationLog;
 use Validator;
 use Illuminate\Support\Str;
 
@@ -325,7 +326,8 @@ class AuthController extends Controller
   public function deviceWarning(Request $request){
 
 	   $rules = [
-		    'device_number' => 'required',
+		    'pid' => 'required',
+        'warning_msg' => 'required'
 	    ];
 
 	    $validator = Validator::make($request->all(), $rules);
@@ -340,10 +342,36 @@ class AuthController extends Controller
 	   		$expiry_date=null;
 
 		   $currentDate = date('Y-m-d');
-		  	$devst=Hdevice::where(['device_number' => $request->device_number,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null);
+		  	$devst=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null);
 		  	if($devst->count() > 0){
 		  		$status="active";
 		  		$expiry_date=$devst->first()->validity_date;
+          $orgid=$devst->first()->organization_id;
+
+          $data=[];
+          $mobnos='';
+
+          $msg=$request->warning_msg;
+
+          if(!empty($orgid)){
+            $memdata=Members::where(['organization_id' => $orgid,'deleted_at' => null])->get();
+            if(!empty($memdata)){
+              foreach ($memdata as $p) {
+                $mobno=$p->mobile_no;
+                $mobnos=$mobnos.$mobno.',';
+                $memid=$p->id;
+                $d=['organization_id' => $orgid,'member_id' => $memid,'message' => $msg];
+                $data[]=$d;
+
+              }
+            }
+          }
+
+          if(!empty($data)){
+            OrganizationNotificationLog::insert($data);
+            Helper::sendSMS($mobnos,$msg);
+          }
+
 		  	}else{
 		  		$status="inactive";
 		  	}
