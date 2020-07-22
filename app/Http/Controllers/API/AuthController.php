@@ -335,50 +335,71 @@ class AuthController extends Controller
 	      // Validation failed
 	      return response()->json([
 	        'errors' => $validator->messages(),
-	        'status' => 0,
 	      ]);
 	    } else{
-	    	$status="";
+	    	$status=0;
 	   		$expiry_date=null;
+        $month='';
+        $day='';
+        $year='';
 
 		   $currentDate = date('Y-m-d');
-		  	$devst=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null);
-		  	if($devst->count() > 0){
-		  		$status="active";
-		  		$expiry_date=$devst->first()->validity_date;
-          $orgid=$devst->first()->organization_id;
 
-          $data=[];
-          $mobnos='';
+        $devdata=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null]);
+		  	if($devdata->count()>0){
+          $vdata=$devdata->first();
+          $expiry_date=$vdata->validity_date;
 
-          $msg=$request->warning_msg;
+          $devst=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null);
+  		  	if($devst->count() > 0){
+  		  		$status=1;
+  		  		$expiry_date=$devst->first()->validity_date;
+            $orgid=$devst->first()->organization_id;
 
-          if(!empty($orgid)){
-            $memdata=Members::where(['organization_id' => $orgid,'deleted_at' => null])->get();
-            if(!empty($memdata)){
-              foreach ($memdata as $p) {
-                $mobno=$p->mobile_no;
-                $mobnos=$mobnos.$mobno.',';
-                $memid=$p->id;
-                $d=['organization_id' => $orgid,'member_id' => $memid,'message' => $msg];
-                $data[]=$d;
+            $data=[];
+            $mobnos='';
 
+            $msg=$request->warning_msg;
+
+            if(!empty($orgid)){
+              $memdata=Members::where(['organization_id' => $orgid,'deleted_at' => null])->get();
+              if(!empty($memdata)){
+                foreach ($memdata as $p) {
+                  $mobno=$p->mobile_no;
+                  $mobnos=$mobnos.$mobno.',';
+                  $memid=$p->id;
+                  $d=['organization_id' => $orgid,'member_id' => $memid,'message' => $msg];
+                  $data[]=$d;
+
+                }
               }
             }
-          }
 
-          if(!empty($data)){
-            OrganizationNotificationLog::insert($data);
-            Helper::sendSMS($mobnos,$msg);
-          }
+            if(!empty($data)){
+              OrganizationNotificationLog::insert($data);
+              Helper::sendSMS($mobnos,$msg);
+            }
 
-		  	}else{
-		  		$status="inactive";
-		  	}
+  		  	}else{
+  		  		$status=0;
+  		  	}
+
+          if(!empty($expiry_date)){
+            $day=date('d',strtotime($expiry_date));
+            $month=date('m',strtotime($expiry_date));
+            $year=date('Y',strtotime($expiry_date));
+          }
+        }else{
+            return response()->json([
+              'error' => 'Device not found'
+            ]);
+        }
 
 		   return response()->json([
-		    'expiry_date' => $expiry_date,
-		    'status' => $status,
+		    'expiry_flag' => $status,
+		    'expiry_day' => $day,
+        'expiry_month' => $month,
+        'expiry_year' => $year
 		  ]);
 		}
   }
@@ -427,43 +448,98 @@ class AuthController extends Controller
     public function addOta(Request $request){
 
         $rules = [
-            'device_number' => 'required',
-            'type' => 'required',
+            'pid' => 'required',
             'version' => 'required',
-            'host' => 'required',
-            'port' => 'required',
-            'bin' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            // Validation failed
             return response()->json([
                 'errors' => $validator->messages(),
-                'status' => 0,
             ]);
         } else{
-            $devst=Hdevice::where(['device_number' => $request->device_number,'status' => 1,'deleted_At' => null])->first();
+            $devst=ota::where(['deleted_At' => null])->where('version','>=',$request->version)->orderBy('version', 'desc')->first();
             if(!empty($devst)) {
-                $otast = ota::insert($request->all());
-                if ($otast > 0) {
-                    return response()->json([
-                        'message' => "OTA Added",
-                        'status' => 1,
-                    ]);
-                } else {
-                    return response()->json([
-                        'errors' => "Invalid request",
-                        'status' => 0,
-                    ]);
-                }
+              return $devst;
             }else{
                 return response()->json([
-                    'errors' => "Device not found",
-                    'status' => 0,
+                    'errors' => "Firmware not found"
                 ]);
             }
         }
     }
+
+    public function getTime(Request $request){
+      $pid=$request->pid;
+      $date=date('Y-m-d H:i:s');
+      $day=date('d',strtotime($date));
+      $month=date('m',strtotime($date));
+      $year=date('Y',strtotime($date));
+      $hour=date('H',strtotime($date));
+      $min=date('i',strtotime($date));
+      $sec=date('s',strtotime($date));
+
+      return response()->json([
+          'hour' => $hour,
+          'min' => $month,
+          'sec' => $sec,
+          'day' => $day,
+          'month' => $month,
+          'year' => $year
+      ]);
+    }
+
+    public function checkRenewal(Request $request){
+
+     $rules = [
+        'pid' => 'required',
+      ];
+
+      $validator = Validator::make($request->all(), $rules);
+      if ($validator->fails()) {
+        // Validation failed
+        return response()->json([
+          'errors' => $validator->messages(),
+        ]);
+      } else{
+        $status=0;
+        $expiry_date=null;
+        $month='';
+        $day='';
+        $year='';
+
+       $currentDate = date('Y-m-d');
+
+        $devdata=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null]);
+        if($devdata->count()>0){
+          $vdata=$devdata->first();
+          $expiry_date=$vdata->validity_date;
+
+          $devst=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null);
+          if($devst->count() > 0){
+            $status=1;
+            $expiry_date=$devst->first()->validity_date;
+          }
+
+          if(!empty($expiry_date)){
+            $day=date('d',strtotime($expiry_date));
+            $month=date('m',strtotime($expiry_date));
+            $year=date('Y',strtotime($expiry_date));
+          }
+
+        }else{
+            return response()->json([
+              'error' => 'Device not found'
+            ]);
+        }
+
+       return response()->json([
+        'expiry_flag' => $status,
+        'expiry_day' => $day,
+        'expiry_month' => $month,
+        'expiry_year' => $year
+      ]);
+    }
+  }
 
 }

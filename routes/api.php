@@ -23,6 +23,9 @@ Route::prefix('v1')->namespace('API')->group(function () {
   Route::post('/login','AuthController@postLogin');
   Route::post('/device-warning','AuthController@deviceWarning');
   Route::post('/add-ota','AuthController@addOta');
+  Route::post('/get_time','AuthController@getTime');
+  Route::post('/check_renewal','AuthController@checkRenewal');
+
   // Register
   // Route::post('/register','AuthController@postRegister');
   // Protected with APIToken Middleware

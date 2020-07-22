@@ -15,7 +15,6 @@ class CreateOtaTable extends Migration
     {
         Schema::create('ota', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->mediumText('device_number');
             $table->string('type')->nullable();
             $table->string('version')->nullable();
             $table->mediumText('host')->nullable();
