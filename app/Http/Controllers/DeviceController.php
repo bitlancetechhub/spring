@@ -122,7 +122,7 @@ class DeviceController extends Controller
     		}
     	}
 
-    	$hdeviceid = Hdevice::where('id',$devid)->update(['validity_date' => $validity_date,'subscription_price' => $subscription_price]);
+    	$hdeviceid = Hdevice::where('id',$devid)->update(['start_date' => date('Y-m-d'),'validity_date' => $validity_date,'subscription_price' => $subscription_price]);
     	if($hdeviceid){
     		Session::flash('alert-success', 'Device plan purchased successfully!');
         	return redirect('organization/device/'.$devid.'/details');

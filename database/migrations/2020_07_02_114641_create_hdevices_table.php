@@ -20,6 +20,7 @@ class CreateHdevicesTable extends Migration
             $table->string('thermal_camera_serial_no')->nullable();
             $table->string('sanitization_device_no')->nullable();
             $table->date('validity_date')->nullable();
+            $table->date('start_date')->nullable();
             $table->double('subscription_price')->nullable();
             $table->longtext('features')->nullable();
             $table->enum('status', [1,2])->default(1);

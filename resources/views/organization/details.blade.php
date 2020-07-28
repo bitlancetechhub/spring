@@ -150,7 +150,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Device No.</th>
-                                    <th>Validity Date</th>
+                                    <th>Start Date to Validity Date</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -161,7 +161,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $p->device_number }}
                                         </td>
-                                        <td>{{ $p->validity_date }}</td>
+                                        <td>{{ $p->start_date }} to {{ $p->validity_date }}</td>
                                         <td>
                                              <form method="post" action="" onsubmit="confirm('Are you sure?');">
                                                 @csrf
