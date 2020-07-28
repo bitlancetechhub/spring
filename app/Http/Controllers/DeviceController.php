@@ -57,7 +57,7 @@ class DeviceController extends Controller
     		}
     	}
 
-    	$hdeviceid = Hdevice::insertGetId(['organization_id' => $orgid,'device_number' => $device_number,'thermal_camera_serial_no' => $thermal_camera_serial_no,'sanitization_device_no' => $sanitization_device_no,'validity_date' => $validity_date,'subscription_price' => $subscription_price]);
+    	$hdeviceid = Hdevice::insertGetId(['organization_id' => $orgid,'device_number' => $device_number,'thermal_camera_serial_no' => $thermal_camera_serial_no,'sanitization_device_no' => $sanitization_device_no,'validity_date' => $validity_date,'start_date' => date('d-m-Y'),'subscription_price' => $subscription_price]);
     	if($hdeviceid){
     		$orguser = OrganizationUsers::insert(['organization_id' => $orgid,'hdevice_id' => $hdeviceid,'organizationid' => $organizationid,'deviceid' => $deviceid,'password' => $password,'api_token' => $this->apiToken]);
 
