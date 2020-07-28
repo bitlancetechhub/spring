@@ -167,6 +167,7 @@
                                                 @csrf
                                                 <input type="hidden" name="orgid" value="{{ $p->id }}">
                                                 <a href="{{ route('edit-device',array($p->id)) }}" class="text-inverse p-r-10" data-toggle="tooltip" title="Edit"><i class="ti-marker-alt"></i></a>
+                                                <a href="{{ route('device_members',array($data->id,$p->id)) }}" class="text-inverse p-r-10" data-toggle="tooltip" title="Members"><i class="ti-user"></i></a>
                                                 <button type="submit" class="btn btn-link text-inverse" title="Delete" data-toggle="tooltip"><i class="ti-trash"></i></button>
                                             </form>
                                         </td>

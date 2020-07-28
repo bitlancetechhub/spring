@@ -9,6 +9,8 @@ use App\Hdevice;
 use App\OrganizationUsers;
 use App\Subscriptions;
 use App\Organization;
+use App\Members;
+use App\DeviceMembers;
 use Illuminate\Support\Str;
 
 class DeviceController extends Controller
@@ -128,5 +130,39 @@ class DeviceController extends Controller
     		Session::flash('alert-danger', 'Device not added!');
         	return redirect('organization/device/'.$devid.'/details');
     	}
+    }
+
+    public function devMembers($orgid,$did)
+    {
+        $members=Members::where(['organization_id' => $orgid,'deleted_at' => null])->orderBy('name','asc')->get();
+        if(!empty($members)){
+            foreach ($members as $p) {
+                $memid=$p->id;
+                $memexist=DeviceMembers::where(['member_id' => $memid,'hdevice_id' => $did])->count();
+                if($memexist>0){
+                    $p->status='checked';
+                }else{
+                    $p->status='';
+                }
+            }
+        }
+        return view('organization.hdevice.members',['members' => $members,'orgid' => $orgid,'did' => $did]);
+    }
+
+    public function saveDevMembers(Request $request,$orgid,$did)
+    {
+        $members=$request->get('members');
+        if(!empty($members)){
+            $tot=count($members);
+            DeviceMembers::where('hdevice_id',$did)->delete();
+
+            for ($i=0; $i < $tot; $i++) { 
+                DeviceMembers::insert(['hdevice_id' => $did,'member_id' => $members[$i]]);
+            }
+        }else{
+            DeviceMembers::where('hdevice_id',$did)->delete();
+        }
+
+        return redirect('organization/hdevice/members/'.$orgid.'/'.$did);
     }
 }

@@ -40,7 +40,7 @@
                 </li>
     
                 <li class="sidebar-item">
-                    <a href="{{ route('home') }}" class="sidebar-link">
+                    <a href="{{ route('notifications') }}" class="sidebar-link">
                         <i data-feather="bell" class="mr-2"></i>
                         <span class="hide-menu"> Notifications </span>
                     </a>

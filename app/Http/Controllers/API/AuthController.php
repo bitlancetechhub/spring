@@ -12,6 +12,7 @@ use App\OrganizationUsers;
 use App\Hdevice;
 use App\Members;
 use App\MemberPhotos;
+use App\DeviceMembers;
 use App\OrganizationNotificationLog;
 use Validator;
 use Illuminate\Support\Str;
@@ -353,8 +354,9 @@ class AuthController extends Controller
           $devst=Hdevice::where(['device_number' => $request->pid,'deleted_at' => null])->where('validity_date', '>=', $currentDate)->where('validity_date','!=', null);
   		  	if($devst->count() > 0){
   		  		$status=1;
-  		  		$expiry_date=$devst->first()->validity_date;
-            $orgid=$devst->first()->organization_id;
+            $devdata=$devst->first();
+            $orgid=$devdata->organization_id;
+            $expiry_date=$devdata->validity_date;
 
             $data=[];
             $mobnos='';
@@ -362,13 +364,13 @@ class AuthController extends Controller
             $msg=$request->warning_msg;
 
             if(!empty($orgid)){
-              $memdata=Members::where(['organization_id' => $orgid,'deleted_at' => null])->get();
+              $memdata=DeviceMembers::where(['hdevice_id' => $devdata->id])->get();
               if(!empty($memdata)){
                 foreach ($memdata as $p) {
-                  $mobno=$p->mobile_no;
+                  $mobno=$p->member->mobile_no;
                   $mobnos=$mobnos.$mobno.',';
-                  $memid=$p->id;
-                  $d=['organization_id' => $orgid,'member_id' => $memid,'message' => $msg];
+                  $memid=$p->member->id;
+                  $d=['organization_id' => $orgid,'member_id' => $memid,'message' => $msg,'created_at' => date('Y-m-d H:i:s')];
                   $data[]=$d;
 
                 }
