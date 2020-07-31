@@ -16,9 +16,10 @@ class CreateHdevicesTable extends Migration
         Schema::create('hdevices', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('organization_id')->unsigned();
-            $table->mediumText('device_number');
+            $table->mediumText('device_area')->nullable();
+            $table->string('pid_uid')->nullable();
             $table->string('thermal_camera_serial_no')->nullable();
-            $table->string('sanitization_device_no')->nullable();
+            $table->string('device_serial_no')->nullable();
             $table->date('validity_date')->nullable();
             $table->date('start_date')->nullable();
             $table->double('subscription_price')->nullable();

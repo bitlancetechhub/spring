@@ -25,9 +25,7 @@ class DeviceController extends Controller
 
     public function add(Request $request){
     	$validator = Validator::make($request->all(), [
-            'device_number' => 'required|unique:hdevices',
-            'organizationid' => 'required|unique:organization_users',
-            'deviceid' => 'required|unique:organization_users',
+            'pid_uid' => 'required|unique:hdevices',
             'password' => 'required|min:8',
         ]);
 
@@ -37,12 +35,12 @@ class DeviceController extends Controller
             return redirect('organization/'.$orgid.'/details')->withErrors($validator)->withInput(); 
         }
 
-    	$device_number=$request->device_number;
+    	$device_area=$request->device_area;
     	$thermal_camera_serial_no=$request->thermal_camera_serial_no;
-    	$sanitization_device_no=$request->sanitization_device_no;
+    	$device_serial_no=$request->device_serial_no;
     	$subscription_id=$request->subscription_id;
     	$organizationid=$request->organizationid;
-    	$deviceid=$request->deviceid;
+    	$pid_uid=$request->pid_uid;
     	$password=bcrypt($request->password);
 
     	$validity_date=null;
@@ -53,13 +51,13 @@ class DeviceController extends Controller
     		if(!empty($data)){
     			$validity_days=$data->validity_days;
     			$subscription_price=$data->subscription_price;
-				$validity_date = date('d-m-Y', strtotime(now().' + '.$validity_days.' days'));
+				$validity_date = date('Y-m-d', strtotime(now().' + '.$validity_days.' days'));
     		}
     	}
 
-    	$hdeviceid = Hdevice::insertGetId(['organization_id' => $orgid,'device_number' => $device_number,'thermal_camera_serial_no' => $thermal_camera_serial_no,'sanitization_device_no' => $sanitization_device_no,'validity_date' => $validity_date,'start_date' => date('d-m-Y'),'subscription_price' => $subscription_price]);
+    	$hdeviceid = Hdevice::insertGetId(['organization_id' => $orgid,'device_area' => $device_area,'pid_uid' => $pid_uid,'thermal_camera_serial_no' => $thermal_camera_serial_no,'device_serial_no' => $device_serial_no,'validity_date' => $validity_date,'start_date' => date('Y-m-d'),'subscription_price' => $subscription_price]);
     	if($hdeviceid){
-    		$orguser = OrganizationUsers::insert(['organization_id' => $orgid,'hdevice_id' => $hdeviceid,'organizationid' => $organizationid,'deviceid' => $deviceid,'password' => $password,'api_token' => $this->apiToken]);
+    		$orguser = OrganizationUsers::insert(['organization_id' => $orgid,'hdevice_id' => $hdeviceid,'organizationid' => $organizationid,'password' => $password,'api_token' => $this->apiToken]);
 
     		Session::flash('alert-success', 'Device added successfully!');
         	return redirect('organization/'.$orgid.'/details');
@@ -76,9 +74,7 @@ class DeviceController extends Controller
     }
     public function update(Request $request,$devid){
     	$validator = Validator::make($request->all(), [
-            'device_number' => 'required',
-            'organization_id' => 'required',
-            'device_id' => 'required',
+            'pid_uid' => 'required',
         ]);
 
         $orgid=$request->orgid;
@@ -87,15 +83,21 @@ class DeviceController extends Controller
             return redirect('organization/device-mobile/'.$devid.'/edit')->withErrors($validator)->withInput(); 
         }
 
-    	$device_number=$request->device_number;
+    	$device_area=$request->device_area;
     	$thermal_camera_serial_no=$request->thermal_camera_serial_no;
-    	$sanitization_device_no=$request->sanitization_device_no;
+    	$device_serial_no=$request->device_serial_no;
     	$organizationid=$request->organization_id;
-    	$deviceid=$request->device_id;
+    	$pid_uid=$request->pid_uid;
     	$features=$request->features;
 
-    	$hdeviceid = Hdevice::where(['id' => $devid])->update(['device_number' => $device_number,'thermal_camera_serial_no' => $thermal_camera_serial_no,'sanitization_device_no' => $sanitization_device_no,'features' => $features]);
-    	$orguser = OrganizationUsers::where(['organization_id' => $orgid,'hdevice_id' => $devid])->update(['organizationid' => $organizationid,'deviceid' => $deviceid]);
+        if(!empty($request->password)){
+            $password=bcrypt($request->password);
+            $orguser = OrganizationUsers::where(['organization_id' => $orgid,'hdevice_id' => $devid])->update(['password' => $password]);
+        }
+        
+
+    	$hdeviceid = Hdevice::where(['id' => $devid])->update(['device_area' => $device_area,'pid_uid' => $pid_uid,'thermal_camera_serial_no' => $thermal_camera_serial_no,'device_serial_no' => $device_serial_no,'features' => $features]);
+    	$orguser = OrganizationUsers::where(['organization_id' => $orgid,'hdevice_id' => $devid])->update(['organizationid' => $organizationid]);
     	Session::flash('alert-success', 'Device updated successfully!');
         return redirect('organization/device-mobile/'.$devid.'/edit');
     }
@@ -147,6 +149,19 @@ class DeviceController extends Controller
             }
         }
         return view('organization.hdevice.members',['members' => $members,'orgid' => $orgid,'did' => $did]);
+    }
+
+    public function delete(Request $request){
+        $id=$request->devid;
+        $orgid=$request->orgid;
+        $res=Hdevice::find($id)->delete();
+        if($res){
+            Session::flash('alert-success', 'Device delete successfully!');
+            return redirect('organization/'.$orgid.'/details');
+        }else{
+            Session::flash('alert-danger', 'Member not deleted!');
+            return redirect('organization/'.$orgid.'/details');
+        }
     }
 
     public function saveDevMembers(Request $request,$orgid,$did)

@@ -17,8 +17,7 @@ class CreateOrganizationUsersTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('organization_id')->unsigned();
             $table->bigInteger('hdevice_id')->unsigned();
-            $table->string('organizationid');
-            $table->string('deviceid');
+            $table->string('organizationid')->nullable();
             $table->string('password');
             $table->enum('status', [1,2])->default(1);
             $table->timestamps();

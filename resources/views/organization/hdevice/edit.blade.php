@@ -22,7 +22,7 @@
                     </ol>
                 </nav>
             </div>
-            <h4 class="page-title">Device No.:- {{ $hdevice->device_number }}</h4>
+            <h4 class="page-title">PID/UID.:- {{ $hdevice->pid_uid }}</h4>
         </div>
         <div class="col-5 align-self-center text-right">
             <ul class="list-inline mb-0">
@@ -62,9 +62,9 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <label for="device_number" class="control-label">H/W Device Number:</label>
-                                    <input type="text" name="device_number" class="form-control @error('device_number') is-invalid @enderror" id="device_number" value="{{ $hdevice->device_number }}">
-                                    @error('device_number')
+                                    <label for="device_area" class="control-label">H/W Device Area:</label>
+                                    <input type="text" name="device_area" class="form-control @error('device_area') is-invalid @enderror" id="device_area" value="{{ $hdevice->device_area }}">
+                                    @error('device_area')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -75,8 +75,8 @@
                                     <input type="text" class="form-control" name="thermal_camera_serial_no" id="thermal_camera_serial_no" value="{{ $hdevice->thermal_camera_serial_no }}">
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="sanitization_device_no" class="control-label">Sanitization Device No.:</label>
-                                    <input type="text" class="form-control" name="sanitization_device_no" id="sanitization_device_no" value="{{ $hdevice->sanitization_device_no }}">
+                                    <label for="device_serial_no" class="control-label">Device Serial No.:</label>
+                                    <input type="text" class="form-control" name="device_serial_no" id="device_serial_no" value="{{ $hdevice->device_serial_no }}">
                                 </div>
                             </div>
                         </div>
@@ -92,9 +92,9 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="device_id" class="control-label">Device ID:</label>
-                                    <input type="text" class="form-control @error('device_id') is-invalid @enderror" id="device_id" name="device_id" value="{{ $orguser->deviceid }}">
-                                    @error('device_id')
+                                    <label for="pid_uid" class="control-label">PID/UID:</label>
+                                    <input type="text" class="form-control @error('pid_uid') is-invalid @enderror" id="pid_uid" name="pid_uid" value="{{ $hdevice->pid_uid }}">
+                                    @error('pid_uid')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -108,6 +108,10 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="password" class="control-label">Password:</label>
+                                    <input type="password" class="form-control" id="password" name="password">
                                 </div>
                             </div>
                         </div>

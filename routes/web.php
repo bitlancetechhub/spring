@@ -55,10 +55,13 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/organization/device-mobile/{devid}/edit', 'DeviceController@edit')->name('edit-device');
 	Route::post('/organization/device-mobile/{devid}/edit', 'DeviceController@update')->name('edit-device');
 	Route::get('/organization/device/{devid}/details', 'DeviceController@details')->name('organization-device-details');
+	Route::post('/organization/device/delete', 'DeviceController@delete')->name('delete-device');
 	Route::post('/device/plan/add', 'DeviceController@purchasePlan')->name('new-device-plan');
 
 	Route::post('getCityByState','UserController@getCitiesByState')->name('getCityByState');
 	Route::get('/notifications', 'HelpController@notifications')->name('notifications');
 	Route::get('/organization/hdevice/members/{orgid}/{did}', 'DeviceController@devMembers')->name('device_members');
 	Route::post('/organization/hdevice/members/{orgid}/{did}', 'DeviceController@saveDevMembers')->name('device_members');
+
+	Route::get('/notifications/{organization?}/{start?}/{end?}', 'HelpController@notifications')->name('notifications');
 });

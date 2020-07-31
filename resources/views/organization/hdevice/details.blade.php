@@ -58,20 +58,24 @@
                                 <table class="table">
                                     <tbody>
                                         <tr>
-                                            <td width="390">H/W Device number</td>
-                                            <td> {{ $hdevice->device_number }} </td>
+                                            <td width="390">H/W Device name</td>
+                                            <th> {{ $hdevice->device_name }} </th>
+                                        </tr>
+                                        <tr>
+                                            <td width="390">PID/UID</td>
+                                            <th> {{ $hdevice->pid_uid }} </th>
                                         </tr>
                                         <tr>
                                             <td width="390">Thermal Camera Serial No.</td>
-                                            <td> {{ $hdevice->thermal_camera_serial_no }}</td>
+                                            <th> {{ $hdevice->thermal_camera_serial_no }}</th>
                                         </tr>
                                         <tr>
                                             <td width="390">Sanitization Device No.</td>
-                                            <td> {{ $hdevice->sanitization_device_no }} </td>
+                                            <th> {{ $hdevice->sanitization_device_no }} </th>
                                         </tr>
                                         <tr>
                                             <td>Features</td>
-                                            <td> {{ $hdevice->features }} </td>
+                                            <th> {{ $hdevice->features }} </th>
                                         </tr>
                                        
                                     </tbody>
@@ -87,10 +91,7 @@
                                             <td width="390">Organization ID</td>
                                             <td> {{ $orguser->organizationid }} </td>
                                         </tr>
-                                        <tr>
-                                            <td width="390">Device ID</td>
-                                            <td> {{ $orguser->deviceid }} </td>
-                                        </tr>
+                                        
                                         <tr>
                                             <td width="390">Current Plan Expire Date</td>
                                             <td> {{ $hdevice->validity_date }} 

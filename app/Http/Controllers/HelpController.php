@@ -7,6 +7,7 @@ use Validator;
 use Session;
 use App\Help;
 use App\OrganizationNotificationLog;
+use App\Organization;
 
 
 class HelpController extends Controller
@@ -28,9 +29,22 @@ class HelpController extends Controller
     	}
     }
 
-    public function notifications()
+    public function notifications(Request $request)
     {
-        $res=OrganizationNotificationLog::orderBy('id','desc')->paginate(10);
-        return view('organization.notifications',['data' => $res]);
+        $res=OrganizationNotificationLog::where('deleted_at',null);
+        if($request->organization=="" && $request->start=="" && $request->end==""){
+            $data=$res->orderBy('id','desc')->paginate(10);
+        }else{
+            if($request->organization!=""){
+                $res->where('organization_id',$request->organization);
+            }
+            if($request->start!="" && $request->end!=""){
+                $res->whereBetween('created_at', [date('Y-m-d',strtotime($request->start)),date('Y-m-d',strtotime($request->end))]);
+            }
+            $data=$res->orderBy('id','desc')->paginate(10);
+        }
+        $org =Organization::where('deleted_at',null)->get();
+        
+        return view('organization.notifications',['data' => $data,'organizations' => $org]);
     }
 }

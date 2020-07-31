@@ -149,7 +149,7 @@
                             <thead class="bg-primary text-white">
                                 <tr>
                                     <th>#</th>
-                                    <th>Device No.</th>
+                                    <th>PID/UID</th>
                                     <th>Start Date to Validity Date</th>
                                     <th>Action</th>
                                 </tr>
@@ -157,15 +157,16 @@
                             <tbody>
                                @if(!empty($hdevices))
                                     @foreach($hdevices as $p)
-                                    <tr class="tab-body-tr" onclick=window.location.href='{{ route("organization-device-details",array($p->id)) }}'>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $p->device_number }}
+                                    <tr class="tab-body-tr">
+                                        <td onclick=window.location.href='{{ route("organization-device-details",array($p->id)) }}'>{{ $loop->iteration }}</td>
+                                        <td onclick=window.location.href='{{ route("organization-device-details",array($p->id)) }}'>{{ $p->pid_uid }}
                                         </td>
-                                        <td>{{ $p->start_date }} to {{ $p->validity_date }}</td>
+                                        <td onclick=window.location.href='{{ route("organization-device-details",array($p->id)) }}'> @if(!empty($p->validity_date)) {{ $p->start_date }} to {{ $p->validity_date }} @endif</td>
                                         <td>
-                                             <form method="post" action="" onsubmit="confirm('Are you sure?');">
+                                             <form method="post" action="{{ route('delete-device') }}" onsubmit="return confirm('Are you sure?');">
                                                 @csrf
-                                                <input type="hidden" name="orgid" value="{{ $p->id }}">
+                                                <input type="hidden" name="orgid" value="{{ $p->organization_id }}">
+                                                <input type="hidden" name="devid" value="{{ $p->id }}">
                                                 <a href="{{ route('edit-device',array($p->id)) }}" class="text-inverse p-r-10" data-toggle="tooltip" title="Edit"><i class="ti-marker-alt"></i></a>
                                                 <a href="{{ route('device_members',array($data->id,$p->id)) }}" class="text-inverse p-r-10" data-toggle="tooltip" title="Members"><i class="ti-user"></i></a>
                                                 <button type="submit" class="btn btn-link text-inverse" title="Delete" data-toggle="tooltip"><i class="ti-trash"></i></button>
@@ -196,7 +197,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="oname" class="control-label">Name:</label>
-                        <input type="text" name="name" required class="form-control @error('name') is-invalid @enderror" id="oname" value="{{ old('name') }}">
+                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" id="oname" value="{{ old('name') }}">
                         @error('name')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -205,7 +206,7 @@
                     </div>
                     <div class="form-group">
                         <label for="identity_no" class="control-label">Identity No.:</label>
-                        <input type="text" required class="form-control @error('identity_no') is-invalid @enderror" name="identity_no" id="identity_no" value="{{ old('identity_no') }}">
+                        <input type="text" class="form-control @error('identity_no') is-invalid @enderror" name="identity_no" id="identity_no" value="{{ old('identity_no') }}">
                         @error('identity_no')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -214,7 +215,7 @@
                     </div>
                     <div class="form-group">
                         <label for="class" class="control-label">Designation/Class:</label>
-                        <input type="text" required class="form-control @error('designation_class') is-invalid @enderror" name="designation_class" id="class" value="{{ old('designation_class') }}">
+                        <input type="text" class="form-control @error('designation_class') is-invalid @enderror" name="designation_class" id="class" value="{{ old('designation_class') }}">
                         @error('designation_class')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -223,7 +224,7 @@
                     </div>
                     <div class="form-group">
                         <label for="division" class="control-label">Department/Division:</label>
-                        <input type="text" required class="form-control @error('department_division') is-invalid @enderror" name="department_division" id="division" value="{{ old('department_division') }}">
+                        <input type="text" class="form-control @error('department_division') is-invalid @enderror" name="department_division" id="division" value="{{ old('department_division') }}">
                         @error('department_division')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -232,7 +233,7 @@
                     </div>
                     <div class="form-group">
                         <label for="mobno" class="control-label">Mobile number:</label>
-                        <input type="text" required class="form-control @error('mobile_no') is-invalid @enderror" id="mobno" name="mobile_no" value="{{ old('mobile_no') }}">
+                        <input type="text" class="form-control @error('mobile_no') is-invalid @enderror" id="mobno" name="mobile_no" value="{{ old('mobile_no') }}">
                         @error('mobile_no')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -265,9 +266,9 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-6">
-                                <label for="device_number" class="control-label">H/W Device Number:</label>
-                                <input type="text" name="device_number" class="form-control @error('device_number') is-invalid @enderror" id="device_number" value="{{ old('device_number') }}">
-                                @error('device_number')
+                                <label for="device_area" class="control-label">H/W Device Area:</label>
+                                <input type="text" name="device_area" class="form-control @error('device_area') is-invalid @enderror" id="device_area" value="{{ old('device_area') }}">
+                                @error('device_area')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -278,8 +279,8 @@
                                 <input type="text" class="form-control" name="thermal_camera_serial_no" id="thermal_camera_serial_no" value="{{ old('thermal_camera_serial_no') }}">
                             </div>
                             <div class="col-md-6">
-                                <label for="sanitization_device_no" class="control-label">Sanitization Device No.:</label>
-                                <input type="text" class="form-control" name="sanitization_device_no" id="sanitization_device_no" value="{{ old('sanitization_device_no') }}">
+                                <label for="device_serial_no" class="control-label">Device Serial No.:</label>
+                                <input type="text" class="form-control" name="device_serial_no" id="device_serial_no" value="{{ old('device_serial_no') }}">
                             </div>
                             <div class="col-md-6">
                                 <label for="subscription_plan" class="control-label">Subscription Plan:</label>
@@ -305,9 +306,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="deviceid" class="control-label">Device ID:</label>
-                        <input type="text" class="form-control @error('deviceid') is-invalid @enderror" id="deviceid" name="deviceid" value="{{ old('deviceid') }}">
-                        @error('deviceid')
+                        <label for="pid_uid" class="control-label">PID/UID:</label>
+                        <input type="text" class="form-control @error('pid_uid') is-invalid @enderror" id="pid_uid" name="pid_uid" value="{{ old('pid_uid') }}">
+                        @error('pid_uid')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
@@ -337,7 +338,7 @@
 @section('scripts')
 @parent
 
-@if($errors->has('name') || $errors->has('identity_no') || $errors->has('designation_class') || $errors->has('department_division') || $errors->has('mobile_no'))
+@if($errors->has('name'))
     <script>
     $(function() {
         $('#new-mem').modal({
@@ -347,7 +348,7 @@
     </script>
 @endif
 
-@if($errors->has('device_number') || $errors->has('organization_id') || $errors->has('device_id') || $errors->has('password'))
+@if($errors->has('pid_uid') || $errors->has('password'))
     <script>
     $(function() {
         $('#new-devmob').modal({

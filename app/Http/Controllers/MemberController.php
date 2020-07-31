@@ -20,10 +20,6 @@ class MemberController extends Controller
     public function add(Request $request){
     	$validator = Validator::make($request->all(), [
             'name' => 'required',
-            'identity_no' => 'required',
-            'designation_class' => 'required',
-            'department_division' => 'required',
-            'mobile_no' => 'required|size:10',
         ]);
 
         $orgid=$request->organization_id;
@@ -102,20 +98,17 @@ class MemberController extends Controller
 	    	$class=$request->designation_class;
 	    	$division=$request->department_division;
 	    	$mobile_no=$request->mobile_no;
+            $alt_mobile_no=$request->alt_mobile_no;
 
 	    	$validator = Validator::make($request->all(), [
 	            'name' => 'required',
-	            'identity_no' => 'required',
-	            'designation_class' => 'required',
-	            'department_division' => 'required',
-	            'mobile_no' => 'required|size:10',
 	        ]);
 
 	        if ($validator->fails()) {
 	            return redirect('organization/member/'.$memid.'/edit')->withErrors($validator)->withInput();
 	        }
 
-	        $userd = Members::where('id',$memid)->update(['name' => $name,'identity_no' => $identity_no,'designation_class' => $class,'department_division' => $division,'mobile_no' => $mobile_no]);
+	        $userd = Members::where('id',$memid)->update(['name' => $name,'identity_no' => $identity_no,'designation_class' => $class,'department_division' => $division,'mobile_no' => $mobile_no,'alt_mobile_no' => $alt_mobile_no]);
 	    	if($userd){
 	    		Session::flash('alert-success', 'Member udpated successfully!');
 	        	return redirect('organization/member/'.$memid.'/edit');

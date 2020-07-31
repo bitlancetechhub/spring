@@ -17,10 +17,10 @@ class CreateMembersTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('organization_id')->unsigned();
             $table->string('name');
-            $table->string('identity_no');
-            $table->string('designation_class');
-            $table->string('department_division');
-            $table->string('mobile_no');
+            $table->string('identity_no')->nullable();
+            $table->string('designation_class')->nullable();
+            $table->string('department_division')->nullable();
+            $table->string('mobile_no')->nullable();
             $table->string('alt_mobile_no')->nullable();
             $table->mediumText('video_url')->nullable();
             $table->enum('status', [1,2])->default(1);

@@ -71,7 +71,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                         <label for="identity_no" class="control-label">Identity No.:</label>
-                                        <input type="text" required class="form-control @error('identity_no') is-invalid @enderror" name="identity_no" id="identity_no" value="{{ $data->identity_no }}">
+                                        <input type="text" class="form-control @error('identity_no') is-invalid @enderror" name="identity_no" id="identity_no" value="{{ $data->identity_no }}">
                                         @error('identity_no')
                                         <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong></span>
@@ -87,8 +87,17 @@
                                 </div>
 
                                 <div class="col-md-6"><br>
+                                    <label for="mobno" class="control-label">Alt.Mobile number:</label>
+                                    <input type="text" class="form-control @error('alt_mobile_no') is-invalid @enderror" id="mobno" name="alt_mobile_no" value="{{ $data->alt_mobile_no }}">
+                                    @error('alt_mobile_no')
+                                    <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong></span>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6"><br>
                                     <label for="class" class="control-label">Designation/Class:</label>
-                                    <input type="text" required class="form-control @error('designation_class') is-invalid @enderror" name="designation_class" id="class" value="{{ $data->designation_class }}">
+                                    <input type="text" class="form-control @error('designation_class') is-invalid @enderror" name="designation_class" id="class" value="{{ $data->designation_class }}">
                                     @error('designation_class')
                                     <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong></span>
@@ -96,7 +105,7 @@
                                 </div>
                                 <div class="col-md-6"><br>
                                     <label for="division" class="control-label">Department/Division:</label>
-                                    <input type="text" required class="form-control @error('department_division') is-invalid @enderror" name="department_division" id="division" value="{{ $data->department_division }}">
+                                    <input type="text" class="form-control @error('department_division') is-invalid @enderror" name="department_division" id="division" value="{{ $data->department_division }}">
                                     @error('department_division')
                                     <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong></span>

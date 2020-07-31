@@ -66,20 +66,20 @@
                             <tbody>
                                 @if(!empty($data))
                                     @foreach($data as $p)
-                                    <tr class="tab-body-tr" onclick=window.location.href='{{ route("organization-details",array($p->id)) }}'>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
+                                    <tr class="tab-body-tr">
+                                        <td onclick=window.location.href='{{ route("organization-details",array($p->id)) }}'>{{ $loop->iteration }}</td>
+                                        <td onclick=window.location.href='{{ route("organization-details",array($p->id)) }}'>
                                             @if(!empty($p->logo_url))
                                                 <img src="{{ env('APP_URL') }}/{{ $p->logo_url }}" width="50px">
                                             @else
                                                 <i class="fas fa-hospital-alt fa-2x"></i>
                                             @endif
                                         </td>
-                                        <td>{{ $p->name }}<br>
+                                        <td onclick=window.location.href='{{ route("organization-details",array($p->id)) }}'>{{ $p->name }}<br>
                                         <small>Created at {{ Helper::converToTz($p->created_at) }}</small>
                                         </td>
-                                        <td>{{ $p->email }}</td>
-                                        <td>{{ $p->mobile_no }}</td>
+                                        <td onclick=window.location.href='{{ route("organization-details",array($p->id)) }}'>{{ $p->email }}</td>
+                                        <td onclick=window.location.href='{{ route("organization-details",array($p->id)) }}'>{{ $p->mobile_no }}</td>
                                         <td>
                                              <form method="post" action="{{ route('delete-organization') }}" onsubmit="return confirm('Are you sure?');">
                                                 @csrf
